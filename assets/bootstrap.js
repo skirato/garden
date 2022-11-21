@@ -7,5 +7,11 @@ export const app = startStimulusApp(require.context(
     /\.[jt]sx?$/
 ));
 
+
+import axios from 'axios'
+window.axios = axios
+
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
 // register any custom, 3rd party controllers here
 // app.register('some_controller_name', SomeImportedController);

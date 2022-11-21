@@ -20,7 +20,7 @@ class SeedType
 
     #[ORM\ManyToOne(inversedBy: 'seedTypes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?SeedVariety $seedType = null;
+    private ?SeedVariety $seedVariety = null;
 
     #[ORM\OneToMany(mappedBy: 'seedType', targetEntity: Seed::class)]
     private Collection $seeds;
@@ -47,14 +47,14 @@ class SeedType
         return $this;
     }
 
-    public function getSeedType(): ?SeedVariety
+    public function getSeedVariety(): ?SeedVariety
     {
-        return $this->seedType;
+        return $this->seedVariety;
     }
 
-    public function setSeedType(?SeedVariety $seedType): self
+    public function setSeedVariety(?SeedVariety $seedVariety): self
     {
-        $this->seedType = $seedType;
+        $this->seedVariety = $seedVariety;
 
         return $this;
     }

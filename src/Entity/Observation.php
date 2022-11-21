@@ -5,10 +5,24 @@ namespace App\Entity;
 use App\Repository\ObservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: ObservationRepository::class)]
 class Observation
 {
+
+    const SEVERITY_INFO = 'info';
+    const SEVERITY_WARNING = 'warning';
+    const SEVERITY_DANGER = 'danger';
+    const SEVERITY_SUCCESS = 'success';
+
+    const SEVERITIES = [
+        self::SEVERITY_INFO,
+        self::SEVERITY_WARNING,
+        self::SEVERITY_DANGER,
+        self::SEVERITY_SUCCESS,
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,6 +33,7 @@ class Observation
 
     #[ORM\ManyToOne(inversedBy: 'observations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Ignore]
     private ?Plant $plant = null;
 
     #[ORM\Column(length: 255)]

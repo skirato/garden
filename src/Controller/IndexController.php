@@ -2,22 +2,21 @@
 
 namespace App\Controller;
 
-
-use App\Entity\Container;
-use App\Entity\Plant;
-use App\Entity\Seed;
 use App\Repository\ContainerRepository;
 use App\Repository\PlantRepository;
 use App\Repository\SeedRepository;
-use http\Client\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'app_index')]
-    public function index(PlantRepository $plantRepository, ContainerRepository $containerRepository, SeedRepository $seedRepository): Response
-    {
+    public function index(
+        PlantRepository $plantRepository,
+        ContainerRepository $containerRepository,
+        SeedRepository $seedRepository
+    ): Response {
         $plants = $plantRepository->findAll();
         $containers = $containerRepository->findAll();
         $seeds = $seedRepository->findAll();
@@ -33,4 +32,5 @@ class IndexController extends AbstractController
             'seeds' => $seeds,
         ]);
     }
+
 }

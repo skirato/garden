@@ -18,7 +18,7 @@ class SeedVariety
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'seedType', targetEntity: SeedType::class)]
+    #[ORM\OneToMany(mappedBy: 'seedVariety', targetEntity: SeedType::class)]
     private Collection $seedTypes;
 
     public function __construct()
@@ -55,7 +55,7 @@ class SeedVariety
     {
         if (!$this->seedTypes->contains($seedType)) {
             $this->seedTypes->add($seedType);
-            $seedType->setSeedType($this);
+            $seedType->setSeedVariety($this);
         }
 
         return $this;
@@ -65,8 +65,8 @@ class SeedVariety
     {
         if ($this->seedTypes->removeElement($seedType)) {
             // set the owning side to null (unless already changed)
-            if ($seedType->getSeedType() === $this) {
-                $seedType->setSeedType(null);
+            if ($seedType->getSeedVariety() === $this) {
+                $seedType->setSeedVariety(null);
             }
         }
 

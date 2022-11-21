@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello!{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row text-center">
+            <div class="col">
+                <label for="seed_selection" class="form-label visually-hidden">Seeds</label>
+                <input name="seeds" id="seed_selection" class="form-control" list="seed_list" placeholder="Search seed...">
+                <datalist id="seed_list">
+                    {% for seed in seeds %}
+                    <option data-value="{{ seed.id }}" value="{{ seed.seedType.name }} ({{ seed.stock }})"></option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div class="col">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#plantModal" type="button"><i class="fa-solid fa-seedling"></i> Plant</button>
+                <button id="delete-seed" class="btn btn-danger" type="button"><i class="fa-solid fa-trash"></i> Delete</button>
+                <button id="transplant" class="btn btn-warning text-white" type="button"><i class="fa-solid fa-plant-wilt"></i> Transplant</button>
+            </div>
+        </div>
+
+        {% for container in containers %}
+        <div class="row mt-5 mb-5">
+            <h3>{{ container.containerType.name }}</h3>
+            <table id="container-table" class="table table-bordered container-table" data-id="{{ container.id }}">
+                <tbody>
+                {% for row in 1..7 %}
+                <tr>
+                    {% for col in 1..15 %}
+                        {% set plant = plants[container.id][row][col] ?? null %}
+                        {% set icon = (plant is not null and plant.seed.icon is not null ? asset('build/images/' ~ plant.seed.icon) :  asset('build/images/icons/empty.png')) %}
+                        <td class="plant{{ (plant is not null) ? ' tcs-ignore' : '' }}" {{ plant is not null ? 'data-id=' ~ plant.id : ''}} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true"
+                            title="{{ plant is not null ? plant.code ~ '<br>' ~ plant.plantedAt|date('j F, Y') : '' }}"
+                        >
+                            <img src='{{ icon }}' height='50' width='50'/>
+                            {% if plant is not null %}
+                                {% set observationsCount = plant.observations|length %}
+                                {% if observationsCount > 0 %}
+                                    <span class="position-absolute top-0 end-0 badge rounded-pill bg-secondary">
+                                        {{ observationsCount }}
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+
+        <div class="modal fade" id="plantModal" tabindex="-1" aria-labelledby="plantModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="plantModalLabel">Plant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="planted-at" class="col-form-label">Date:</label>
+                                <input type="date" class="form-control" id="planted-at" name="plantedAt" value="{{ "now"|date('Y-m-d') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="seeds-per-slot" class="col-form-label">Seeds per slot:</label>
+                                <input type="number" class="form-control" id="seeds-per-slot" name="seedsPerSlot" value="1">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                        <button id="plant-seed" type="button" class="btn btn-success"><i class="fa-solid fa-seedling"></i> Plant</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="observationModal" tabindex="-1" aria-labelledby="observationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="observationModalLabel">Observation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="note" class="col-form-label">Note:</label>
+                                <textarea class="form-control" id="note" name="note" placeholder="My observations" required="required"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="severity" class="col-form-label">Severity:</label>
+                                <select class="form-control bg-info" id="severity" name="severity">
+                                    {% for severity in constant('App\\Entity\\Observation::SEVERITIES') %}
+                                    <option class="bg-{{severity}}" value="{{severity}}">{{severity}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="observed-at" class="col-form-label">Date:</label>
+                                <input type="datetime-local" class="form-control" id="observed-at" name="observedAt" value="{{ "now"|date('Y-m-d h:m:s') }}">
+                            </div>
+                            <input type="hidden" id="plant-id" name="plantId">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                        <button id="observe" type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="fa-solid fa-pen-fancy"></i> Log</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="observationListModal" tabindex="-1" aria-labelledby="observationListModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="observationListModalLabel">Observations</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="observationTable" class="table">
+                            <thead>
+                            <tr>
+                                <th class="col-1">Severity</th>
+                                <th class="col-3">Date</th>
+                                <th class="col-8">Note</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

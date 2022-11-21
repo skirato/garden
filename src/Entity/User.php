@@ -32,6 +32,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $username = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $FirstName = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $LastName = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,6 +119,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->FirstName;
+    }
+
+    public function setFirstName(string $FirstName): self
+    {
+        $this->FirstName = $FirstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->LastName;
+    }
+
+    public function setLastName(string $LastName): self
+    {
+        $this->LastName = $LastName;
 
         return $this;
     }
