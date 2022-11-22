@@ -24,7 +24,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
-          tools: cs2pr, phpcs
+          tools: cs2pr, phpcs, phpstan
 
       # Composer
       - name: Get composer cache directory
