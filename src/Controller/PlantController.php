@@ -44,6 +44,8 @@ class PlantController extends AbstractController
 
             $plantRepository->save($plant);
         }
+
+        return new JsonResponse();
     }
 
     /**
