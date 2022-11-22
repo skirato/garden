@@ -32,5 +32,4 @@ class IndexController extends AbstractController
             'seeds' => $seeds,
         ]);
     }
-
 }

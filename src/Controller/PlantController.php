@@ -76,8 +76,10 @@ class PlantController extends AbstractController
         ObservationRepository $observationRepository,
         PlantRepository $plantRepository
     ): Response {
-        $observations = $observationRepository->findBy(['plant' => $plantRepository->find($plantId)],
-            ['observedAt' => 'DESC']);
+        $observations = $observationRepository->findBy(
+            ['plant' => $plantRepository->find($plantId)],
+            ['observedAt' => 'DESC']
+        );
 
         return $this->json($observations);
     }

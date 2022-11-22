@@ -10,13 +10,12 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 #[ORM\Entity(repositoryClass: ObservationRepository::class)]
 class Observation
 {
+    public const SEVERITY_INFO = 'info';
+    public const SEVERITY_WARNING = 'warning';
+    public const SEVERITY_DANGER = 'danger';
+    public const SEVERITY_SUCCESS = 'success';
 
-    const SEVERITY_INFO = 'info';
-    const SEVERITY_WARNING = 'warning';
-    const SEVERITY_DANGER = 'danger';
-    const SEVERITY_SUCCESS = 'success';
-
-    const SEVERITIES = [
+    public const SEVERITIES = [
         self::SEVERITY_INFO,
         self::SEVERITY_WARNING,
         self::SEVERITY_DANGER,

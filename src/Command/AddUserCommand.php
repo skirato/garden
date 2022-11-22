@@ -25,6 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -47,10 +48,7 @@ use function Symfony\Component\String\u;
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  */
-#[AsCommand(
-    name: 'app:add-user',
-    description: 'Creates users and stores them in the database'
-)]
+#[AsCommand(name: 'app:add-user', description: 'Creates users and stores them in the database')]
 class AddUserCommand extends Command
 {
     private SymfonyStyle $io;
@@ -69,8 +67,7 @@ class AddUserCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->setHelp($this->getCommandHelp())
+        $this->setHelp($this->getCommandHelp())
             // commands can optionally define arguments and/or options (mandatory and optional)
             // see https://symfony.com/doc/current/components/console/console_arguments.html
             ->addArgument('username', InputArgument::OPTIONAL, 'The username of the new user')
@@ -78,8 +75,7 @@ class AddUserCommand extends Command
             ->addArgument('email', InputArgument::OPTIONAL, 'The email of the new user')
             ->addArgument('first-name', InputArgument::OPTIONAL, 'The first name of the new user')
             ->addArgument('last-name', InputArgument::OPTIONAL, 'The last name of the new user')
-            ->addOption('admin', null, InputOption::VALUE_NONE, 'If set, the user is created as an administrator')
-        ;
+            ->addOption('admin', null, InputOption::VALUE_NONE, 'If set, the user is created as an administrator');
     }
 
     /**
@@ -106,7 +102,11 @@ class AddUserCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        if (null !== $input->getArgument('username') && null !== $input->getArgument('password') && null !== $input->getArgument('email') && null !== $input->getArgument('first-name') && null !== $input->getArgument('last-name')) {
+        if (
+            null !== $input->getArgument('username') && null !== $input->getArgument('password')
+            && null !== $input->getArgument('email') && null !== $input->getArgument('first-name')
+            && null !== $input->getArgument('last-name')
+        ) {
             return;
         }
 
@@ -123,7 +123,7 @@ class AddUserCommand extends Command
         // Ask for the username if it's not defined
         $username = $input->getArgument('username');
         if (null !== $username) {
-            $this->io->text(' > <info>Username</info>: '.$username);
+            $this->io->text(' > <info>Username</info>: ' . $username);
         } else {
             $username = $this->io->ask('Username', null, [$this->validator, 'validateUsername']);
             $input->setArgument('username', $username);
@@ -132,16 +132,19 @@ class AddUserCommand extends Command
         // Ask for the password if it's not defined
         $password = $input->getArgument('password');
         if (null !== $password) {
-            $this->io->text(' > <info>Password</info>: '.u('*')->repeat(u($password)->length()));
+            $this->io->text(' > <info>Password</info>: ' . u('*')->repeat(u($password)->length()));
         } else {
-            $password = $this->io->askHidden('Password (your type will be hidden)', [$this->validator, 'validatePassword']);
+            $password = $this->io->askHidden(
+                'Password (your type will be hidden)',
+                [$this->validator, 'validatePassword']
+            );
             $input->setArgument('password', $password);
         }
 
         // Ask for the email if it's not defined
         $email = $input->getArgument('email');
         if (null !== $email) {
-            $this->io->text(' > <info>Email</info>: '.$email);
+            $this->io->text(' > <info>Email</info>: ' . $email);
         } else {
             $email = $this->io->ask('Email', null, [$this->validator, 'validateEmail']);
             $input->setArgument('email', $email);
@@ -150,7 +153,7 @@ class AddUserCommand extends Command
         // Ask for the first name if it's not defined
         $firstName = $input->getArgument('first-name');
         if (null !== $firstName) {
-            $this->io->text(' > <info>First Name</info>: '.$firstName);
+            $this->io->text(' > <info>First Name</info>: ' . $firstName);
         } else {
             $firstName = $this->io->ask('First Name', null, [$this->validator, 'validateFistName']);
             $input->setArgument('full-name', $firstName);
@@ -159,7 +162,7 @@ class AddUserCommand extends Command
         // Ask for the last name if it's not defined
         $lastName = $input->getArgument('last-name');
         if (null !== $lastName) {
-            $this->io->text(' > <info>Last Name</info>: '.$lastName);
+            $this->io->text(' > <info>Last Name</info>: ' . $lastName);
         } else {
             $lastName = $this->io->ask('Last Name', null, [$this->validator, 'validatLastName']);
             $input->setArgument('last-name', $lastName);
@@ -200,11 +203,21 @@ class AddUserCommand extends Command
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $this->io->success(sprintf('%s was successfully created: %s (%s)', $isAdmin ? 'Administrator user' : 'User', $user->getUsername(), $user->getEmail()));
+        $this->io->success(sprintf(
+            '%s was successfully created: %s (%s)',
+            $isAdmin ? 'Administrator user' : 'User',
+            $user->getUsername(),
+            $user->getEmail()
+        ));
 
         $event = $stopwatch->stop('add-user-command');
         if ($output->isVerbose()) {
-            $this->io->comment(sprintf('New user database id: %d / Elapsed time: %.2f ms / Consumed memory: %.2f MB', $user->getId(), $event->getDuration(), $event->getMemory() / (1024 ** 2)));
+            $this->io->comment(sprintf(
+                'New user database id: %d / Elapsed time: %.2f ms / Consumed memory: %.2f MB',
+                $user->getId(),
+                $event->getDuration(),
+                $event->getMemory() / (1024 ** 2)
+            ));
         }
 
         return Command::SUCCESS;
@@ -216,7 +229,10 @@ class AddUserCommand extends Command
         $existingUser = $this->users->findOneBy(['username' => $username]);
 
         if (null !== $existingUser) {
-            throw new RuntimeException(sprintf('There is already a user registered with the "%s" username.', $username));
+            throw new RuntimeException(sprintf(
+                'There is already a user registered with the "%s" username.',
+                $username
+            ));
         }
 
         // validate password and email if is not this input means interactive.

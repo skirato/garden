@@ -100,6 +100,9 @@
         }
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest"
+        ,
+        "escapestudios/symfony2-coding-standard": "3.x-dev",
         "phpmd/phpmd": "^2.13",
         "phpstan/phpstan": "^1.9",
         "phpunit/phpunit": "^9.5",

@@ -12,6 +12,7 @@
 namespace App\Utils;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -30,7 +31,9 @@ class Validator
         }
 
         if (1 !== preg_match('/^[a-z_]+$/', $username)) {
-            throw new InvalidArgumentException('The username must contain only lowercase latin characters and underscores.');
+            throw new InvalidArgumentException(
+                'The username must contain only lowercase latin characters and underscores.'
+            );
         }
 
         return $username;
@@ -42,7 +45,11 @@ class Validator
             throw new InvalidArgumentException('The password can not be empty.');
         }
 
-        if (u($plainPassword)->trim()->length() < 6) {
+        if (
+            u($plainPassword)
+                ->trim()
+                ->length() < 6
+        ) {
             throw new InvalidArgumentException('The password must be at least 6 characters long.');
         }
 
